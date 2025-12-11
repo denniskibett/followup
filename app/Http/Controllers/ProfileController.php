@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Illuminate\Validation\Rule;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -310,6 +311,152 @@ class ProfileController extends Controller
         return response()->json([
             'user' => $user->only(['name', 'email', 'phone', 'bio', 'country', 'city', 'state', 'postal_code', 'tax_id'])
         ]);
+    }
+
+    public function index(Request $request): View
+    {
+        // Check if user is admin - using auth() helper instead
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $search = $request->input('search');
+        
+        // Get users with pagination
+        $users = User::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('role', 'like', "%{$search}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+        
+        return view('admin.users.index', [
+            'users' => $users,
+            'search' => $search
+        ]);
+    }
+    
+    /**
+     * Display user details for admin
+     */
+    public function showUser(Request $request, $id): View
+    {
+        // Check if user is admin
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $user = User::findOrFail($id);
+        
+        return view('admin.users.show', [
+            'user' => $user
+        ]);
+    }
+
+    public function editUser(Request $request, $id): View
+{
+    // Check if user is admin
+    if (!auth()->check() || !auth()->user()->isAdmin()) {
+        abort(403, 'Unauthorized action.');
+    }
+    
+    $user = User::findOrFail($id);
+    
+    return view('admin.users.edit', [
+        'user' => $user
+    ]);
+}
+
+
+    public function updateUser(Request $request, $id): RedirectResponse
+    {
+        // Check if user is admin
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $user = User::findOrFail($id);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'role' => 'required|in:admin,dg,ps',
+            'phone' => 'nullable|string|max:20',
+            'bio' => 'nullable|string|max:500',
+            'country' => 'nullable|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:20',
+            'tax_id' => 'nullable|string|max:50',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+        
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            
+            // Store new avatar
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = $path;
+        }
+        
+        // Handle social links
+        $socialData = [];
+        $socialPlatforms = ['facebook', 'twitter', 'linkedin', 'instagram'];
+        
+        foreach ($socialPlatforms as $platform) {
+            $value = $request->input("social.{$platform}");
+            if (!empty($value)) {
+                $socialData[$platform] = $this->formatSocialLink($platform, $value);
+            }
+        }
+        
+        // Only encode if we have social data
+        if (!empty($socialData)) {
+            $validated['social'] = json_encode($socialData);
+        }
+        
+        $user->update($validated);
+        
+        return redirect()->route('admin.users.show', $user)
+            ->with('success', 'User updated successfully!');
+    }
+
+ 
+    public function destroyUser(Request $request, $id): RedirectResponse
+    {
+        // Check if user is admin
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $user = User::findOrFail($id);
+        
+        // Prevent admin from deleting themselves
+        if ($user->id === auth()->id()) {
+            return redirect()->back()
+                ->with('error', 'You cannot delete your own account.');
+        }
+        
+        // Delete avatar if exists
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+        
+        $user->delete();
+        
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User deleted successfully!');
     }
     
 }

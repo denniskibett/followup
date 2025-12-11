@@ -3,6 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\SystemController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RemarkController;
+use App\Http\Controllers\Admin\UserController; // You'll need to create this
 
 Route::get('/', function () {
     return view('welcome');
@@ -10,13 +14,37 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
+
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Reports Routes
+    Route::resource('reports', ReportController::class);
+
+    Route::get('/reports/{report}/remarks/create', [RemarkController::class, 'create'])->name('remarks.create');
+    Route::post('/reports/{report}/remarks', [RemarkController::class, 'store'])->name('remarks.store');
+
+    // Remarks Routes
+    Route::controller(RemarkController::class)->group(function () {
+        // Create remark for a specific report
+        Route::get('/reports/{report}/remarks/create', 'create')->name('remarks.create');
+        Route::post('/reports/{report}/remarks', 'store')->name('remarks.store');
+        
+        // View all remarks dashboard
+        Route::get('/remarks', 'dashboard')->name('remarks.dashboard');
+        
+        // Edit/update individual remark
+        Route::put('/remarks/{remark}', 'update')->name('remarks.update');
+        
+        // Delete individual remark
+        Route::delete('/remarks/{remark}', 'destroy')->name('remarks.destroy');
+    });
+
+
+   
+    
     Route::get('/index', function () {
         return view('index');
     })->name('index');    
@@ -89,6 +117,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/data', [ProfileController::class, 'getUserData'])->name('profile.data');
 
+   // Admin users management routes
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users', [ProfileController::class, 'index'])->name('users.index');
+        Route::get('/users/{id}', [ProfileController::class, 'showUser'])->name('users.show');
+        Route::get('/users/{id}/edit', [ProfileController::class, 'editUser'])->name('users.edit'); // Add this
+        Route::put('/users/{id}', [ProfileController::class, 'updateUser'])->name('users.update'); // Add this
+        Route::delete('/users/{id}', [ProfileController::class, 'destroyUser'])->name('users.destroy'); // Add this
+    });
+    
+    
+
     // System Settings
     Route::prefix('system')->name('system.')->group(function () {
         Route::get('/', [SystemController::class, 'index'])->name('index');
@@ -98,5 +137,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/toggle-maintenance', [SystemController::class, 'toggleMaintenance'])->name('toggle-maintenance');
         Route::post('/debug', [SystemController::class, 'debug'])->name('debug');
     });
+    
 });
+
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('login.google');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+
 require __DIR__.'/auth.php';

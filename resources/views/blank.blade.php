@@ -24,7 +24,7 @@
                   class="text-sm text-gray-500 dark:text-gray-400 sm:text-base"
                 >
                   Start putting content on grids or panels, you can also use
-                  different combinations of grids. Please check out the
+                  different combinations of grids.Please check out the
                   dashboard and other pages
                 </p>
               </div>

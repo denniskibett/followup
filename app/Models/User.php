@@ -22,6 +22,7 @@ class User extends Authenticatable
         'postal_code',
         'tax_id',
         'social',
+        'role',
     ];
 
     protected $hidden = [
@@ -34,9 +35,32 @@ class User extends Authenticatable
         'social' => 'array',
     ];
 
-    /**
-     * Get social links with proper URLs
-     */
+    public function reports() {
+        return $this->hasMany(Report::class);
+    }
+
+    public function remarks() {
+        return $this->hasMany(Remark::class, 'ps_id');
+    }
+
+    public function isPs(): bool {
+        return $this->role === 'ps';
+    }
+
+    public function isDg(): bool {
+        return $this->role === 'dg';
+    }
+
+    public function isAdmin(): bool {
+        return $this->role === 'admin';
+    }
+
+
+    public function getRoleNameAttribute()
+    {
+        return $this->isPs() ? 'Permanent Secretary' : ($this->isDg() ? 'Director General' : 'Administrator');
+    }
+
     public function getSocialLinksAttribute()
     {
         $social = $this->social ?: [];

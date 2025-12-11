@@ -13,7 +13,7 @@
         <img
           class="hidden dark:block"
           src="{{ SystemHelper::logoUrl(true) ?? './images/logo/logo-dark.svg' }}"
-          alt="Logo"
+          alt="{{ SystemHelper::appName(); }} Logo"
         />
       </span>
 
@@ -64,7 +64,7 @@
           <!-- Menu Item Dashboard -->
           <li>
             <a
-              href="dashboard"
+              href="{{ route('dashboard')}}"
               @click="selected = (selected === 'Dashboard' ? '':'Dashboard')"
               class="menu-item group"
               :class="(selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'"
@@ -95,9 +95,38 @@
           </li>
           <!-- Menu Item Dashboard -->
 
+          <!-- Menu Item Reports -->
+          <li>
+            <a
+              href="{{ route('reports.index') }}"
+              @click="selected = (selected === 'Reports' ? '' : 'Reports')"
+              class="menu-item group"
+              :class="(selected === 'Reports') && (page === 'reports') ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg
+                :class="(selected === 'Reports') && (page === 'reports') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path 
+                  d="M4 4H20V6H4V4ZM4 8H14V10H4V8ZM4 12H20V14H4V12ZM4 16H14V18H4V16Z"
+                  fill=""
+                />
+              </svg>
+
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                Reports
+              </span>
+            </a>
+          </li>
+          <!-- End Menu Item Reports -->
+
 
           <!-- Menu Item Calendar -->
-          <li>
+          {{-- <li>
             <a
               href="calendar"
               @click="selected = (selected === 'Calendar' ? '':'Calendar')"
@@ -127,45 +156,12 @@
                 Calendar
               </span>
             </a>
-          </li>
+          </li> --}}
           <!-- Menu Item Calendar -->
 
-          <!-- Menu Item Profile -->
-          <li>
-            <a
-              href="profile"
-              @click="selected = (selected === 'Profile' ? '':'Profile')"
-              class="menu-item group"
-              :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'"
-            >
-              <svg
-                :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z"
-                  fill=""
-                />
-              </svg>
-
-              <span
-                class="menu-item-text"
-                :class="sidebarToggle ? 'lg:hidden' : ''"
-              >
-                User Profile
-              </span>
-            </a>
-          </li>
-          <!-- Menu Item Profile -->
-
+    
           <!-- Menu Item Forms -->
-          <li>
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Forms' ? '':'Forms')"
@@ -235,11 +231,11 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Forms -->
 
           <!-- Menu Item Tables -->
-          <li>
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Tables' ? '':'Tables')"
@@ -309,11 +305,11 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Tables -->
 
           <!-- Menu Item Pages -->
-          <li>
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Pages' ? '':'Pages')"
@@ -392,7 +388,7 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Pages -->
         </ul>
       </div>
@@ -426,8 +422,58 @@
         </h3>
 
         <ul class="flex flex-col gap-4 mb-6">
-          <!-- Menu Item Charts -->
+          <!-- Menu Item System -->
+          @if(auth()->user() && auth()->user()->isAdmin())
           <li>
+              <a
+                href="{{ route('system.index') }}"
+                @click="selected = (selected === 'System' ? '' : 'System')"
+                class="menu-item group"
+                :class="(selected === 'System') && (page === 'system') ? 'menu-item-active' : 'menu-item-inactive'"
+              >
+                <svg
+                  :class="(selected === 'System') && (page === 'system') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path 
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M12 2C12.4142 2 12.75 2.33579 12.75 2.75V4.143C13.7104 4.32977 14.6141 4.74403 15.385 5.353L16.348 4.39C16.6405 4.09746 17.1174 4.09746 17.41 4.39L19.61 6.59C19.9025 6.88254 19.9025 7.35946 19.61 7.652L18.647 8.615C19.256 9.38591 19.6703 10.2896 19.857 11.25H21.25C21.6642 11.25 22 11.5858 22 12C22 12.4142 21.6642 12.75 21.25 12.75H19.857C19.6703 13.7104 19.256 14.6141 18.647 15.385L19.61 16.348C19.9025 16.6405 19.9025 17.1174 19.61 17.41L17.41 19.61C17.1174 19.9025 16.6405 19.9025 16.348 19.61L15.385 18.647C14.6141 19.256 13.7104 19.6703 12.75 19.857V21.25C12.75 21.6642 12.4142 22 12 22C11.5858 22 11.25 21.6642 11.25 21.25V19.857C10.2896 19.6703 9.38591 19.256 8.615 18.647L7.652 19.61C7.35946 19.9025 6.88254 19.9025 6.59 19.61L4.39 17.41C4.09746 17.1174 4.09746 16.6405 4.39 16.348L5.353 15.385C4.74403 14.6141 4.32977 13.7104 4.143 12.75H2.75C2.33579 12.75 2 12.4142 2 12C2 11.5858 2.33579 11.25 2.75 11.25H4.143C4.32977 10.2896 4.74403 9.38591 5.353 8.615L4.39 7.652C4.09746 7.35946 4.09746 6.88254 4.39 6.59L6.59 4.39C6.88254 4.09746 7.35946 4.09746 7.652 4.39L8.615 5.353C9.38591 4.74403 10.2896 4.32977 11.25 4.143V2.75C11.25 2.33579 11.5858 2 12 2ZM12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9Z"
+                    fill=""
+                  />
+                </svg>
+
+                <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                  System
+                </span>
+              </a>
+          </li>
+          @endif
+
+          {{-- In your sidebar.blade.php --}}
+          @if(auth()->user()->isAdmin())
+          <li class="menu-item">
+              <a href="{{ route('admin.users.index') }}" class="menu-link">
+                  <div class="menu-icon">
+                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0c-.281.053-.562.106-.844.155m-12.656 0c.281-.053.562-.106.844-.155m12.656 0a9 9 0 01-12.656 0"/>
+                      </svg>
+                  </div>
+                  <div class="menu-text">User Management</div>
+              </a>
+          </li>
+          @endif
+
+          <!-- End Menu Item System -->
+
+          <!-- End Menu Item System -->
+
+          <!-- Menu Item Charts -->
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Charts' ? '':'Charts')"
@@ -506,11 +552,11 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Charts -->
 
           <!-- Menu Item Ui Elements -->
-          <li>
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'UIElements' ? '':'UIElements')"
@@ -625,7 +671,7 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Ui Elements -->
 
         </ul>

@@ -1,9 +1,9 @@
-# FollowUp - Enterprise Project Management System
+# FollowUp - Government Enterprise Project Management System
 
-## 🎯 Overview
+## Overview
 FollowUp is a comprehensive project management platform designed for government and enterprise environments with MCDA (Ministry, State Department, Agency) hierarchy support.
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 - **Multi-level MCDA Hierarchy** - Ministry → State Department → Agency structure
@@ -23,7 +23,7 @@ FollowUp is a comprehensive project management platform designed for government 
 - **Rich Text**: Quill.js editor integration
 - **Date Handling**: Flatpickr with timezone support
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 ```bash
